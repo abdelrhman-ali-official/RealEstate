@@ -58,6 +58,14 @@ namespace Persistence.Data.Configurations
                 .HasColumnType("decimal(10,2)")
                 .IsRequired();
 
+            builder.Property(p => p.Rooms)
+                .HasColumnType("int")
+                .IsRequired(false);
+
+            builder.Property(p => p.Bathrooms)
+                .HasColumnType("int")
+                .IsRequired(false);
+
             builder.Property(p => p.Type)
                 .IsRequired();
 

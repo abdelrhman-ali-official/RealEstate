@@ -20,6 +20,8 @@ namespace Domain.Entities.DeveloperEntities
         public string City { get; set; }
         public string FullAddress { get; set; }
         public decimal Area { get; set; }
+        public int? Rooms { get; set; }
+        public int? Bathrooms { get; set; }
         public PropertyType Type { get; set; }
         public PropertyStatus Status { get; set; }
         public string MainImageUrl { get; set; }

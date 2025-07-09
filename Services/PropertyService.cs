@@ -33,6 +33,27 @@ namespace Services
 
             var propertiesResult = _mapper.Map<IEnumerable<PropertyResultDTO>>(properties);
 
+            // Apply sorting
+            if (parameters.Sort.HasValue)
+            {
+                propertiesResult = parameters.Sort.Value switch
+                {
+                    PropertySortingOptions.TitleAsc => propertiesResult.OrderBy(p => p.Title),
+                    PropertySortingOptions.TitleDesc => propertiesResult.OrderByDescending(p => p.Title),
+                    PropertySortingOptions.PriceAsc => propertiesResult.OrderBy(p => p.Price),
+                    PropertySortingOptions.PriceDesc => propertiesResult.OrderByDescending(p => p.Price),
+                    PropertySortingOptions.AreaAsc => propertiesResult.OrderBy(p => p.Area),
+                    PropertySortingOptions.AreaDesc => propertiesResult.OrderByDescending(p => p.Area),
+                    PropertySortingOptions.RoomsAsc => propertiesResult.OrderBy(p => p.Rooms ?? int.MaxValue),
+                    PropertySortingOptions.RoomsDesc => propertiesResult.OrderByDescending(p => p.Rooms ?? int.MinValue),
+                    PropertySortingOptions.BathroomsAsc => propertiesResult.OrderBy(p => p.Bathrooms ?? int.MaxValue),
+                    PropertySortingOptions.BathroomsDesc => propertiesResult.OrderByDescending(p => p.Bathrooms ?? int.MinValue),
+                    PropertySortingOptions.CreatedAtAsc => propertiesResult.OrderBy(p => p.CreatedAt),
+                    PropertySortingOptions.CreatedAtDesc => propertiesResult.OrderByDescending(p => p.CreatedAt),
+                    _ => propertiesResult
+                };
+            }
+
             var count = propertiesResult.Count();
 
             var totalCount = await _unitOfWork.GetRepository<Property, int>()

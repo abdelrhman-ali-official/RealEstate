@@ -22,6 +22,10 @@ namespace Shared.DeveloperModels
         public decimal? MaxPrice { get; set; }
         public decimal? MinArea { get; set; }
         public decimal? MaxArea { get; set; }
+        public int? MinRooms { get; set; }
+        public int? MaxRooms { get; set; }
+        public int? MinBathrooms { get; set; }
+        public int? MaxBathrooms { get; set; }
         public PropertySortingOptions? Sort { get; set; }
         public int PageIndex { get; set; } = 1;
         public string? Search { get; set; }
@@ -43,6 +47,10 @@ namespace Shared.DeveloperModels
         PriceDesc,
         AreaAsc,
         AreaDesc,
+        RoomsAsc,
+        RoomsDesc,
+        BathroomsAsc,
+        BathroomsDesc,
         CreatedAtAsc,
         CreatedAtDesc
     }

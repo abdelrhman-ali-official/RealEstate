@@ -29,6 +29,10 @@ namespace Services.Specifications
                 (!parameters.MaxPrice.HasValue || property.Price <= parameters.MaxPrice.Value) &&
                 (!parameters.MinArea.HasValue || property.Area >= parameters.MinArea.Value) &&
                 (!parameters.MaxArea.HasValue || property.Area <= parameters.MaxArea.Value) &&
+                (!parameters.MinRooms.HasValue || (property.Rooms.HasValue && property.Rooms.Value >= parameters.MinRooms.Value)) &&
+                (!parameters.MaxRooms.HasValue || (property.Rooms.HasValue && property.Rooms.Value <= parameters.MaxRooms.Value)) &&
+                (!parameters.MinBathrooms.HasValue || (property.Bathrooms.HasValue && property.Bathrooms.Value >= parameters.MinBathrooms.Value)) &&
+                (!parameters.MaxBathrooms.HasValue || (property.Bathrooms.HasValue && property.Bathrooms.Value <= parameters.MaxBathrooms.Value)) &&
                 (string.IsNullOrWhiteSpace(parameters.Search) || property.Title.ToLower().Contains(parameters.Search.ToLower().Trim()) || property.Description.ToLower().Contains(parameters.Search.ToLower().Trim())))
         {
             AddInclude(property => property.Developer);
