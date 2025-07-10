@@ -18,6 +18,7 @@ namespace Services.Specifications
                 (string.IsNullOrWhiteSpace(parameters.City) || property.City.ToLower().Contains(parameters.City.ToLower().Trim())) &&
                 (!parameters.Type.HasValue || property.Type == parameters.Type.Value) &&
                 (!parameters.Status.HasValue || property.Status == parameters.Status.Value) &&
+                (!parameters.Purpose.HasValue || property.Purpose == parameters.Purpose.Value) &&
                 (!parameters.MinPrice.HasValue || property.Price >= parameters.MinPrice.Value) &&
                 (!parameters.MaxPrice.HasValue || property.Price <= parameters.MaxPrice.Value) &&
                 (!parameters.MinArea.HasValue || property.Area >= parameters.MinArea.Value) &&

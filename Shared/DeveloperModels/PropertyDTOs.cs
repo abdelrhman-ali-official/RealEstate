@@ -23,6 +23,7 @@ namespace Shared.DeveloperModels
         public int? Bathrooms { get; set; }
         public PropertyType Type { get; set; }
         public PropertyStatus Status { get; set; }
+        public PropertyPurpose Purpose { get; set; }
         public string MainImageUrl { get; set; }
         public string AdditionalImages { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -46,6 +47,7 @@ namespace Shared.DeveloperModels
         public int? Bathrooms { get; set; }
         public PropertyType Type { get; set; }
         public PropertyStatus Status { get; set; }
+        public PropertyPurpose Purpose { get; set; }
         public string MainImageUrl { get; set; }
         public string AdditionalImages { get; set; }
     }
@@ -63,6 +65,7 @@ namespace Shared.DeveloperModels
         public int? Bathrooms { get; set; }
         public PropertyType Type { get; set; }
         public PropertyStatus Status { get; set; }
+        public PropertyPurpose Purpose { get; set; }
         public string MainImageUrl { get; set; }
         public string AdditionalImages { get; set; }
     }

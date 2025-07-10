@@ -68,6 +68,22 @@ namespace Services
             return result;
         }
 
+        public async Task<PaginatedResult<PropertyResultDTO>> GetPropertiesForSaleAsync(PropertySpecificationsParameters parameters)
+        {
+            // Set the purpose to ForSale
+            parameters.Purpose = PropertyPurpose.ForSale;
+            
+            return await GetAllPropertiesAsync(parameters);
+        }
+
+        public async Task<PaginatedResult<PropertyResultDTO>> GetPropertiesForRentAsync(PropertySpecificationsParameters parameters)
+        {
+            // Set the purpose to ForRent
+            parameters.Purpose = PropertyPurpose.ForRent;
+            
+            return await GetAllPropertiesAsync(parameters);
+        }
+
         public async Task<PropertyResultDTO?> GetPropertyByIdAsync(int id)
         {
             var property = await _unitOfWork.GetRepository<Property, int>().GetAsync(

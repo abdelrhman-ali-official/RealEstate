@@ -24,6 +24,7 @@ namespace Domain.Entities.DeveloperEntities
         public int? Bathrooms { get; set; }
         public PropertyType Type { get; set; }
         public PropertyStatus Status { get; set; }
+        public PropertyPurpose Purpose { get; set; }
         public string MainImageUrl { get; set; }
         public string AdditionalImages { get; set; } // JSON string for multiple images
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -45,5 +46,11 @@ namespace Domain.Entities.DeveloperEntities
         Sold = 2,
         Pending = 3,
         Reserved = 4
+    }
+
+    public enum PropertyPurpose
+    {
+        ForSale = 1,
+        ForRent = 2
     }
 } 
