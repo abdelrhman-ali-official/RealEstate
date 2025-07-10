@@ -18,6 +18,7 @@ namespace Shared.DeveloperModels
         public string? City { get; set; }
         public PropertyType? Type { get; set; }
         public PropertyStatus? Status { get; set; }
+        public PropertyPurpose? Purpose { get; set; }
         public decimal? MinPrice { get; set; }
         public decimal? MaxPrice { get; set; }
         public decimal? MinArea { get; set; }

@@ -40,6 +40,38 @@ namespace Presentation
             }
         }
 
+        [HttpGet("for-sale")]
+        [AllowAnonymous]
+        public async Task<ActionResult<PaginatedResult<PropertyResultDTO>>> GetPropertiesForSale([FromQuery] PropertySpecificationsParameters parameters)
+        {
+            try
+            {
+                var properties = await _serviceManager.PropertyService.GetPropertiesForSaleAsync(parameters);
+                return Ok(properties);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving properties for sale: {Message}", ex.Message);
+                return StatusCode(500, new { Message = "An error occurred while retrieving properties for sale." });
+            }
+        }
+
+        [HttpGet("for-rent")]
+        [AllowAnonymous]
+        public async Task<ActionResult<PaginatedResult<PropertyResultDTO>>> GetPropertiesForRent([FromQuery] PropertySpecificationsParameters parameters)
+        {
+            try
+            {
+                var properties = await _serviceManager.PropertyService.GetPropertiesForRentAsync(parameters);
+                return Ok(properties);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving properties for rent: {Message}", ex.Message);
+                return StatusCode(500, new { Message = "An error occurred while retrieving properties for rent." });
+            }
+        }
+
         [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<ActionResult<PropertyResultDTO>> GetPropertyById(int id)

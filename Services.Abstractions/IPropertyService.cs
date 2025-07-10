@@ -11,6 +11,8 @@ namespace Services.Abstractions
     public interface IPropertyService
     {
         Task<PaginatedResult<PropertyResultDTO>> GetAllPropertiesAsync(PropertySpecificationsParameters parameters);
+        Task<PaginatedResult<PropertyResultDTO>> GetPropertiesForSaleAsync(PropertySpecificationsParameters parameters);
+        Task<PaginatedResult<PropertyResultDTO>> GetPropertiesForRentAsync(PropertySpecificationsParameters parameters);
         Task<PropertyResultDTO?> GetPropertyByIdAsync(int id);
         Task<IEnumerable<PropertyResultDTO>> GetPropertiesByDeveloperAsync(int developerId, string userId);
         Task<IEnumerable<PropertyResultDTO>> GetPropertiesByBrokerAsync(int brokerId, string userId);

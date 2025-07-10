@@ -72,6 +72,9 @@ namespace Persistence.Data.Configurations
             builder.Property(p => p.Status)
                 .IsRequired();
 
+            builder.Property(p => p.Purpose)
+                .IsRequired();
+
             builder.Property(p => p.MainImageUrl)
                 .HasMaxLength(500);
 
