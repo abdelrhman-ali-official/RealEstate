@@ -16,6 +16,7 @@ using AutoMapper;
 using Domain.Contracts;
 using Persistence.Data;
 using Core.Services;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Services
 {
@@ -30,6 +31,7 @@ namespace Services
         private readonly Lazy<IDashboardService> _dashboardService;
         private readonly Lazy<IWishListService> _wishListService;
         private readonly Lazy<IPropertyViewHistoryService> _propertyViewHistoryService;
+        private readonly Lazy<IChatService> _chatService;
 
         private readonly AutoMapper.IMapper _mapper;
     
@@ -54,6 +56,12 @@ namespace Services
             _dashboardService = new Lazy<IDashboardService>(() => new DashboardService(unitOfWork, mapper, userManager));
             _wishListService = new Lazy<IWishListService>(() => new WishListService(unitOfWork, mapper));
             _propertyViewHistoryService = new Lazy<IPropertyViewHistoryService>(() => new PropertyViewHistoryService(unitOfWork, mapper));
+            _chatService = new Lazy<IChatService>(() => new ChatService(
+                unitOfWork,
+                mapper,
+                serviceProvider.GetRequiredService<IChatHubContext>(),
+                serviceProvider.GetRequiredService<Persistence.Data.StoreContext>()
+            ));
 
             // Initialize authenticationService
             _authenticationService = new Lazy<IAuthenticationService>(() => new AuthenticationService(
@@ -96,5 +104,6 @@ namespace Services
         public IDashboardService DashboardService => _dashboardService.Value;
         public IWishListService WishListService => _wishListService.Value;
         public IPropertyViewHistoryService PropertyViewHistoryService => _propertyViewHistoryService.Value;
+        public IChatService ChatService => _chatService.Value;
     }
 }
