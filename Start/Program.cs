@@ -13,6 +13,7 @@ using Persistence.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Start
 {
@@ -25,6 +26,10 @@ namespace Start
             // Add services to the container.
 
             builder.Services.AddControllers();
+            builder.Services.AddSignalR();
+            
+            // Register IChatHubContext implementation
+            builder.Services.AddScoped<IChatHubContext, ChatHubContext>();
             
             // Add CORS - Allow ALL frontend requests
             builder.Services.AddCors(options =>
@@ -137,6 +142,7 @@ namespace Start
             app.UseAuthorization();
 
             app.MapControllers();
+            app.MapHub<ChatHub>("/hubs/chat");
 
             app.Run();
             async Task InitializeDbAsync(WebApplication app)

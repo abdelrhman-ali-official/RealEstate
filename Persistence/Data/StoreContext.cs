@@ -35,6 +35,9 @@ namespace Persistence.Data
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<WishListItem> WishListItems { get; set; }
         public DbSet<PropertyViewHistory> PropertyViewHistories { get; set; }
+        public DbSet<Domain.Entities.ChatRoom> ChatRooms { get; set; }
+        public DbSet<Domain.Entities.ChatMessage> ChatMessages { get; set; }
+        public DbSet<Domain.Entities.ChatMessageReaction> ChatMessageReactions { get; set; }
     }
 }
 
