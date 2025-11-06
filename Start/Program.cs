@@ -36,9 +36,10 @@ namespace Start
             {
                 options.AddPolicy("AllowAll", policy =>
                 {
-                    policy.AllowAnyOrigin()
+                    policy.WithOrigins("http://localhost:4200")
                           .AllowAnyMethod()
-                          .AllowAnyHeader();
+                          .AllowAnyHeader()
+                          .AllowCredentials();
                 });
             });
             
@@ -142,7 +143,7 @@ namespace Start
             app.UseAuthorization();
 
             app.MapControllers();
-            app.MapHub<ChatHub>("/hubs/chat");
+            app.MapHub<ChatHub>("/chathub");
 
             app.Run();
             async Task InitializeDbAsync(WebApplication app)

@@ -13,11 +13,19 @@ namespace Persistence.Data.Configurations
             builder.Property(x => x.SenderId).IsRequired();
             builder.Property(x => x.Message).IsRequired();
             builder.Property(x => x.SentAt).IsRequired();
-            builder.HasOne<ChatRoom>()
+            builder.Property(x => x.IsDelivered).IsRequired().HasDefaultValue(false);
+            builder.Property(x => x.IsRead).IsRequired().HasDefaultValue(false);
+            builder.Property(x => x.DeliveredAt).IsRequired(false);
+            builder.Property(x => x.ReadAt).IsRequired(false);
+            
+            // Configure relationship with ChatRoom using the navigation property
+            builder.HasOne(x => x.ChatRoom)
                    .WithMany()
                    .HasForeignKey(x => x.ChatRoomId)
                    .OnDelete(DeleteBehavior.Cascade);
-            builder.HasOne<ChatMessage>()
+            
+            // Configure self-referencing relationship for RepliedToMessage
+            builder.HasOne(x => x.RepliedToMessage)
                    .WithMany()
                    .HasForeignKey(x => x.RepliedToMessageId)
                    .OnDelete(DeleteBehavior.Restrict);

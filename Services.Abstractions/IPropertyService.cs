@@ -16,9 +16,9 @@ namespace Services.Abstractions
         Task<PropertyResultDTO?> GetPropertyByIdAsync(int id);
         Task<IEnumerable<PropertyResultDTO>> GetPropertiesByDeveloperAsync(int developerId, string userId);
         Task<IEnumerable<PropertyResultDTO>> GetPropertiesByBrokerAsync(int brokerId, string userId);
-        Task<PropertyResultDTO> CreatePropertyAsync(PropertyCreateDTO propertyDto, string userId);
+        Task<PropertyResultDTO> CreatePropertyAsync(PropertyCreateDTO propertyDto, string userId, ISubscriptionService subscriptionService);
         Task<PropertyResultDTO> UpdatePropertyAsync(int id, PropertyUpdateDTO propertyDto, string userId);
-        Task<bool> DeletePropertyAsync(int id, string userId);
+        Task<bool> DeletePropertyAsync(int id, string userId, ISubscriptionService subscriptionService);
         Task<IEnumerable<string>> GetGovernmentsAsync();
         Task<IEnumerable<string>> GetCitiesByGovernmentAsync(string government);
     }

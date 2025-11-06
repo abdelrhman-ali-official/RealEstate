@@ -3,6 +3,7 @@ using Domain.Entities.DeveloperEntities;
 using Domain.Entities.ProductEntities;
 using Domain.Entities.SecurityEntities;
 using Domain.Entities.BrokerEntities;
+using Domain.Entities.SubscriptionEntities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System;
@@ -38,6 +39,10 @@ namespace Persistence.Data
         public DbSet<Domain.Entities.ChatRoom> ChatRooms { get; set; }
         public DbSet<Domain.Entities.ChatMessage> ChatMessages { get; set; }
         public DbSet<Domain.Entities.ChatMessageReaction> ChatMessageReactions { get; set; }
+        public DbSet<Domain.Entities.UserConnection> UserConnections { get; set; }
+        public DbSet<Domain.Entities.ChatMessageStatus> ChatMessageStatuses { get; set; }
+        public DbSet<Package> Packages { get; set; }
+        public DbSet<Subscription> Subscriptions { get; set; }
     }
 }
 

@@ -1,4 +1,5 @@
 using Domain.Entities.SecurityEntities;
+using Domain.Entities.SubscriptionEntities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,5 +21,8 @@ namespace Domain.Entities.BrokerEntities
         public string Government { get; set; }
         public string? LogoUrl { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        
+        // Navigation properties
+        public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
     }
 } 

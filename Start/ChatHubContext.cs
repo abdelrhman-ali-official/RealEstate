@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
 using Services.Abstractions;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Start
@@ -54,6 +55,28 @@ namespace Start
         public async Task SendUserLeftRoomAsync(string groupName, string userId)
         {
             await _hubContext.Clients.Group(groupName).SendAsync("UserLeft", userId);
+        }
+
+        // Presence Events
+        public async Task SendUserOnlineStatusAsync(string userId, bool isOnline)
+        {
+            await _hubContext.Clients.All.SendAsync("UserOnlineStatus", userId, isOnline);
+        }
+
+        public async Task SendUserLastSeenAsync(string userId, System.DateTime lastSeen)
+        {
+            await _hubContext.Clients.All.SendAsync("UserLastSeen", userId, lastSeen);
+        }
+
+        // Notification Events
+        public async Task SendNotificationAsync(string userId, string title, string message, string type)
+        {
+            await _hubContext.Clients.User(userId).SendAsync("Notification", title, message, type);
+        }
+
+        public async Task SendBulkNotificationAsync(IEnumerable<string> userIds, string title, string message, string type)
+        {
+            await _hubContext.Clients.Users(userIds).SendAsync("Notification", title, message, type);
         }
     }
 } 

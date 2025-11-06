@@ -1,6 +1,7 @@
 ﻿using Domain.Contracts;
 using Domain.Entities.ProductEntities;
 using Domain.Entities.SecurityEntities;
+using Domain.Entities.SubscriptionEntities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -77,6 +78,9 @@ namespace Persistence
 
                 // Seed product data
                 await SeedProductDataAsync();
+
+                // Seed subscription packages
+                await SeedPackagesAsync();
 
                
             }
@@ -177,6 +181,88 @@ namespace Persistence
                 {
                     Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
                 }
+            }
+        }
+
+        private async Task SeedPackagesAsync()
+        {
+            try
+            {
+                if (!_storeContext.Packages.Any())
+                {
+                    Console.WriteLine("Seeding subscription packages...");
+
+                    var packages = new List<Package>
+                    {
+                        new Package
+                        {
+                            Name = "Basic",
+                            Description = "Perfect for getting started with property listings",
+                            Price = 0,
+                            MonthlyPrice = 0, // Free for monthly
+                            YearlyPrice = 10000, // 10000 L.E for yearly
+                            PropertyLimit = 10,
+                            ShowPropertyViews = true,
+                            ShowWishlistNotifications = true,
+                            ShowWishlistUserDetails = false,
+                            FunnelTracking = false,
+                            ExportLeads = false,
+                            DirectContactSystem = false,
+                            WhatsAppIntegration = false,
+                            IsActive = true,
+                            CreatedAt = DateTime.UtcNow
+                        },
+                        new Package
+                        {
+                            Name = "Pro",
+                            Description = "Advanced features for professional real estate agents",
+                            Price = 0,
+                            MonthlyPrice = 0, // Free for monthly
+                            YearlyPrice = 10000, // 10000 L.E for yearly
+                            PropertyLimit = 50,
+                            ShowPropertyViews = true,
+                            ShowWishlistNotifications = true,
+                            ShowWishlistUserDetails = true,
+                            FunnelTracking = true,
+                            ExportLeads = true,
+                            DirectContactSystem = false,
+                            WhatsAppIntegration = false,
+                            IsActive = true,
+                            CreatedAt = DateTime.UtcNow
+                        },
+                        new Package
+                        {
+                            Name = "Premium",
+                            Description = "Ultimate package with unlimited properties and direct communication",
+                            Price = 0,
+                            MonthlyPrice = 0, // Free for monthly
+                            YearlyPrice = 10000, // 10000 L.E for yearly
+                            PropertyLimit = -1, // Unlimited
+                            ShowPropertyViews = true,
+                            ShowWishlistNotifications = true,
+                            ShowWishlistUserDetails = true,
+                            FunnelTracking = true,
+                            ExportLeads = true,
+                            DirectContactSystem = true,
+                            WhatsAppIntegration = true,
+                            IsActive = true,
+                            CreatedAt = DateTime.UtcNow
+                        }
+                    };
+
+                    await _storeContext.Packages.AddRangeAsync(packages);
+                    await _storeContext.SaveChangesAsync();
+                    Console.WriteLine($"Added {packages.Count} subscription packages");
+                }
+                else
+                {
+                    Console.WriteLine("Subscription packages already exist, skipping seeding");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error seeding packages: {ex.Message}");
+                // Don't throw exception to prevent application startup failure
             }
         }
 

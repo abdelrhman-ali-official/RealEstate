@@ -143,15 +143,25 @@ namespace Persistence.Migrations
                     b.Property<int>("ChatRoomId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("DeliveredAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("IsDelivered")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsRead")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<int?>("RepliedToMessageId")
                         .HasColumnType("int");
@@ -180,6 +190,9 @@ namespace Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("ChatMessageId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -196,10 +209,50 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ChatMessageId");
+
                     b.HasIndex("MessageId", "UserId")
                         .IsUnique();
 
                     b.ToTable("ChatMessageReactions");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ChatMessageStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ChatMessageId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MessageId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StatusChangedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChatMessageId");
+
+                    b.HasIndex("MessageId");
+
+                    b.HasIndex("MessageId", "UserId");
+
+                    b.ToTable("ChatMessageStatuses", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.ChatRoom", b =>
@@ -218,18 +271,26 @@ namespace Persistence.Migrations
 
                     b.Property<string>("User1Id")
                         .IsRequired()
+                        .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("User2Id")
                         .IsRequired()
+                        .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("PropertyId");
+
+                    b.HasIndex("User1Id");
+
+                    b.HasIndex("User2Id");
+
                     b.HasIndex("PropertyId", "User1Id", "User2Id")
                         .IsUnique();
 
-                    b.ToTable("ChatRooms");
+                    b.ToTable("ChatRooms", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.DeveloperEntities.Developer", b =>
@@ -597,6 +658,211 @@ namespace Persistence.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.SubscriptionEntities.Package", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("DirectContactSystem")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("ExportLeads")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("FunnelTracking")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<decimal>("MonthlyPrice")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal>("Price")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<int>("PropertyLimit")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("ShowPropertyViews")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("ShowWishlistNotifications")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("ShowWishlistUserDetails")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("WhatsAppIntegration")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<decimal>("YearlyPrice")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(10000m);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Packages", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.SubscriptionEntities.Subscription", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("BrokerId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CurrentPropertyCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int?>("DeveloperId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<int>("PackageId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PlanType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("Monthly");
+
+                    b.Property<DateTime>("SubscribedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PackageId");
+
+                    b.HasIndex("SubscribedAt");
+
+                    b.HasIndex("BrokerId", "IsActive")
+                        .IsUnique()
+                        .HasFilter("[BrokerId] IS NOT NULL AND [IsActive] = 1");
+
+                    b.HasIndex("DeveloperId", "IsActive")
+                        .IsUnique()
+                        .HasFilter("[DeveloperId] IS NOT NULL AND [IsActive] = 1");
+
+                    b.ToTable("Subscriptions", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Subscription_UserType", "([BrokerId] IS NOT NULL AND [DeveloperId] IS NULL) OR ([BrokerId] IS NULL AND [DeveloperId] IS NOT NULL)");
+                        });
+                });
+
+            modelBuilder.Entity("Domain.Entities.UserConnection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("ConnectedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("ConnectionId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("DeviceInfo")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsOnline")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<DateTime>("LastSeenAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("UserAgent")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId", "ConnectionId");
+
+                    b.ToTable("UserConnections", (string)null);
+                });
+
             modelBuilder.Entity("Domain.Entities.WishListItem", b =>
                 {
                     b.Property<int>("Id")
@@ -807,25 +1073,75 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.ChatMessage", b =>
                 {
-                    b.HasOne("Domain.Entities.ChatRoom", null)
+                    b.HasOne("Domain.Entities.ChatRoom", "ChatRoom")
                         .WithMany()
                         .HasForeignKey("ChatRoomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.ChatMessage", null)
+                    b.HasOne("Domain.Entities.ChatMessage", "RepliedToMessage")
                         .WithMany()
                         .HasForeignKey("RepliedToMessageId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ChatRoom");
+
+                    b.Navigation("RepliedToMessage");
                 });
 
             modelBuilder.Entity("Domain.Entities.ChatMessageReaction", b =>
                 {
                     b.HasOne("Domain.Entities.ChatMessage", null)
+                        .WithMany("Reactions")
+                        .HasForeignKey("ChatMessageId");
+
+                    b.HasOne("Domain.Entities.ChatMessage", null)
                         .WithMany()
                         .HasForeignKey("MessageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Entities.ChatMessageStatus", b =>
+                {
+                    b.HasOne("Domain.Entities.ChatMessage", null)
+                        .WithMany("MessageStatuses")
+                        .HasForeignKey("ChatMessageId");
+
+                    b.HasOne("Domain.Entities.ChatMessage", "Message")
+                        .WithMany()
+                        .HasForeignKey("MessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Message");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ChatRoom", b =>
+                {
+                    b.HasOne("Domain.Entities.DeveloperEntities.Property", "Property")
+                        .WithMany()
+                        .HasForeignKey("PropertyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.SecurityEntities.User", "User1")
+                        .WithMany()
+                        .HasForeignKey("User1Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.SecurityEntities.User", "User2")
+                        .WithMany()
+                        .HasForeignKey("User2Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Property");
+
+                    b.Navigation("User1");
+
+                    b.Navigation("User2");
                 });
 
             modelBuilder.Entity("Domain.Entities.DeveloperEntities.Developer", b =>
@@ -905,6 +1221,31 @@ namespace Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Domain.Entities.SubscriptionEntities.Subscription", b =>
+                {
+                    b.HasOne("Domain.Entities.BrokerEntities.Broker", "Broker")
+                        .WithMany("Subscriptions")
+                        .HasForeignKey("BrokerId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("Domain.Entities.DeveloperEntities.Developer", "Developer")
+                        .WithMany("Subscriptions")
+                        .HasForeignKey("DeveloperId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("Domain.Entities.SubscriptionEntities.Package", "Package")
+                        .WithMany("Subscriptions")
+                        .HasForeignKey("PackageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Broker");
+
+                    b.Navigation("Developer");
+
+                    b.Navigation("Package");
+                });
+
             modelBuilder.Entity("Domain.Entities.WishListItem", b =>
                 {
                     b.HasOne("Domain.Entities.DeveloperEntities.Property", "Property")
@@ -975,15 +1316,34 @@ namespace Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Domain.Entities.BrokerEntities.Broker", b =>
+                {
+                    b.Navigation("Subscriptions");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ChatMessage", b =>
+                {
+                    b.Navigation("MessageStatuses");
+
+                    b.Navigation("Reactions");
+                });
+
             modelBuilder.Entity("Domain.Entities.DeveloperEntities.Developer", b =>
                 {
                     b.Navigation("Properties");
+
+                    b.Navigation("Subscriptions");
                 });
 
             modelBuilder.Entity("Domain.Entities.SecurityEntities.User", b =>
                 {
                     b.Navigation("Address")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Entities.SubscriptionEntities.Package", b =>
+                {
+                    b.Navigation("Subscriptions");
                 });
 #pragma warning restore 612, 618
         }

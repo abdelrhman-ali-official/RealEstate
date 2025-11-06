@@ -13,7 +13,11 @@ namespace Services.MappingProfiles
                 .ForMember(dest => dest.PropertyTitle, opt => opt.MapFrom(src => src.Property.Title))
                 .ForMember(dest => dest.OwnerType, opt => opt.MapFrom(src => src.DeveloperId.HasValue ? "Developer" : "Broker"))
                 .ForMember(dest => dest.OwnerName, opt => opt.MapFrom(src => src.DeveloperId.HasValue ? src.Developer.User.DisplayName : src.Broker.FullName))
-                .ForMember(dest => dest.OwnerContact, opt => opt.MapFrom(src => src.DeveloperId.HasValue ? src.Developer.Phone : src.Broker.Phone));
+                .ForMember(dest => dest.OwnerContact, opt => opt.MapFrom(src => src.DeveloperId.HasValue ? src.Developer.Phone : src.Broker.Phone))
+                .ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.CustomerId))
+                .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(src => src.Customer.DisplayName))
+                .ForMember(dest => dest.CustomerEmail, opt => opt.MapFrom(src => src.Customer.Email))
+                .ForMember(dest => dest.CustomerPhoneNumber, opt => opt.MapFrom(src => src.Customer.PhoneNumber));
 
             CreateMap<AppointmentCreateDTO, Appointment>();
             CreateMap<AppointmentUpdateDTO, Appointment>();

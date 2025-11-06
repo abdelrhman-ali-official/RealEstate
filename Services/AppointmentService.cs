@@ -156,6 +156,42 @@ namespace Services
             return true;
         }
 
+        public async Task<IEnumerable<AppointmentResultDTO>> GetBrokerAppointmentsAsync(string userId, AppointmentSpecificationsParameters parameters)
+        {
+            // Get broker by userId
+            var broker = await _unitOfWork.GetRepository<Domain.Entities.BrokerEntities.Broker, int>()
+                .GetAsync(new BrokerByUserIdSpecification(userId));
+            
+            if (broker == null)
+                throw new UnauthorizedAccessException("Broker not found");
+
+            // Set broker ID in parameters
+            parameters.BrokerId = broker.Id;
+            
+            var appointments = await _unitOfWork.GetRepository<Appointment, int>()
+                .GetAllAsync(new AppointmentWithDetailsSpecifications(parameters));
+            
+            return _mapper.Map<IEnumerable<AppointmentResultDTO>>(appointments);
+        }
+
+        public async Task<IEnumerable<AppointmentResultDTO>> GetDeveloperAppointmentsAsync(string userId, AppointmentSpecificationsParameters parameters)
+        {
+            // Get developer by userId
+            var developer = await _unitOfWork.GetRepository<Domain.Entities.DeveloperEntities.Developer, int>()
+                .GetAsync(new DeveloperByUserIdSpecification(userId));
+            
+            if (developer == null)
+                throw new UnauthorizedAccessException("Developer not found");
+
+            // Set developer ID in parameters
+            parameters.DeveloperId = developer.Id;
+            
+            var appointments = await _unitOfWork.GetRepository<Appointment, int>()
+                .GetAllAsync(new AppointmentWithDetailsSpecifications(parameters));
+            
+            return _mapper.Map<IEnumerable<AppointmentResultDTO>>(appointments);
+        }
+
        
     }
 } 
