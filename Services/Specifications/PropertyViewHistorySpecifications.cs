@@ -21,6 +21,15 @@ namespace Services.Specifications
         }
     }
 
+    public class PropertyViewHistoryByUserAndPropertySpecifications : Specifications<PropertyViewHistory>
+    {
+        public PropertyViewHistoryByUserAndPropertySpecifications(string userId, int propertyId)
+            : base(v => v.UserId == userId && v.PropertyId == propertyId)
+        {
+            setOrderByDescending(v => v.ViewedAt);
+        }
+    }
+
     public class PropertyViewHistoryWithPropertySpecifications : Specifications<PropertyViewHistory>
     {
         public PropertyViewHistoryWithPropertySpecifications()
@@ -29,6 +38,17 @@ namespace Services.Specifications
             AddInclude(v => v.Property);
             AddInclude(v => v.Property.Developer);
             AddInclude(v => v.Property.Broker);
+        }
+    }
+
+    // New specification for property viewers analytics (includes user details)
+    public class PropertyViewHistoryWithUserSpecifications : Specifications<PropertyViewHistory>
+    {
+        public PropertyViewHistoryWithUserSpecifications(int propertyId)
+            : base(v => v.PropertyId == propertyId)
+        {
+            AddInclude(v => v.User);
+            setOrderByDescending(v => v.ViewedAt);
         }
     }
 } 

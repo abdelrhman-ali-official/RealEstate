@@ -201,5 +201,59 @@ namespace Presentation
                 return StatusCode(500, ApiResponse.FailureResponse("An error occurred while updating the appointment status"));
             }
         }
+
+        /// <summary>
+        /// Get all appointments for the authenticated broker with optional filtering
+        /// </summary>
+        [HttpGet("broker/my-appointments")]
+        [Authorize(Roles = "Broker")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<AppointmentResultDTO>>>> GetBrokerAppointments([FromQuery] AppointmentSpecificationsParameters parameters)
+        {
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                    return Unauthorized(ApiResponse<IEnumerable<AppointmentResultDTO>>.FailureResponse("User ID not found in token."));
+
+                var result = await _serviceManager.AppointmentService.GetBrokerAppointmentsAsync(userId, parameters);
+                return Ok(ApiResponse<IEnumerable<AppointmentResultDTO>>.SuccessResponse(result, "Broker appointments retrieved successfully"));
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(403, ApiResponse<IEnumerable<AppointmentResultDTO>>.FailureResponse("Access denied. Broker profile not found."));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving broker appointments: {Message}", ex.Message);
+                return StatusCode(500, ApiResponse<IEnumerable<AppointmentResultDTO>>.FailureResponse("An error occurred while retrieving broker appointments"));
+            }
+        }
+
+        /// <summary>
+        /// Get all appointments for the authenticated developer with optional filtering
+        /// </summary>
+        [HttpGet("developer/my-appointments")]
+        [Authorize(Roles = "Developer")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<AppointmentResultDTO>>>> GetDeveloperAppointments([FromQuery] AppointmentSpecificationsParameters parameters)
+        {
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                    return Unauthorized(ApiResponse<IEnumerable<AppointmentResultDTO>>.FailureResponse("User ID not found in token."));
+
+                var result = await _serviceManager.AppointmentService.GetDeveloperAppointmentsAsync(userId, parameters);
+                return Ok(ApiResponse<IEnumerable<AppointmentResultDTO>>.SuccessResponse(result, "Developer appointments retrieved successfully"));
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(403, ApiResponse<IEnumerable<AppointmentResultDTO>>.FailureResponse("Access denied. Developer profile not found."));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving developer appointments: {Message}", ex.Message);
+                return StatusCode(500, ApiResponse<IEnumerable<AppointmentResultDTO>>.FailureResponse("An error occurred while retrieving developer appointments"));
+            }
+        }
     }
 } 

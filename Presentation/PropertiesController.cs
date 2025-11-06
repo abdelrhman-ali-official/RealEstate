@@ -82,6 +82,27 @@ namespace Presentation
                 if (property == null)
                     return NotFound($"Property with ID {id} not found.");
 
+                // Automatically track property view for authenticated users
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogInformation("Recording property view for Property {PropertyId} by User {UserId}", id, userId);
+                    try
+                    {
+                        await _serviceManager.PropertyViewHistoryService.AddPropertyViewAsync(id, userId);
+                        _logger.LogInformation("Successfully recorded property view for Property {PropertyId} by User {UserId}", id, userId);
+                    }
+                    catch (Exception viewEx)
+                    {
+                        _logger.LogError(viewEx, "Failed to record property view for Property {PropertyId} by User {UserId}", id, userId);
+                        // Don't fail the main request if view tracking fails
+                    }
+                }
+                else
+                {
+                    _logger.LogInformation("No authenticated user found for property view tracking");
+                }
+
                 return Ok(property);
             }
             catch (Exception ex)
@@ -136,7 +157,7 @@ namespace Presentation
                 if (string.IsNullOrEmpty(userId))
                     return Unauthorized(ApiResponse<PropertyResultDTO>.FailureResponse("User ID not found in token."));
 
-                var property = await _serviceManager.PropertyService.CreatePropertyAsync(propertyDto, userId);
+                var property = await _serviceManager.PropertyService.CreatePropertyAsync(propertyDto, userId, _serviceManager.SubscriptionService);
                 return CreatedAtAction(nameof(GetPropertyById), new { id = property.Id }, 
                     ApiResponse<PropertyResultDTO>.SuccessResponse(property, "Property created successfully"));
             }
@@ -177,7 +198,7 @@ namespace Presentation
                 if (string.IsNullOrEmpty(userId))
                     return Unauthorized("User ID not found in token.");
 
-                var result = await _serviceManager.PropertyService.DeletePropertyAsync(id, userId);
+                var result = await _serviceManager.PropertyService.DeletePropertyAsync(id, userId, _serviceManager.SubscriptionService);
                 if (!result)
                     return NotFound($"Property with ID {id} not found.");
 
@@ -220,17 +241,6 @@ namespace Presentation
                 _logger.LogError(ex, "Error retrieving cities for government {Government}", government);
                 return StatusCode(500, new { Message = "An error occurred while retrieving cities." });
             }
-        }
-
-        [HttpPost("{propertyId}/view")]
-        [Authorize(Roles = "Customer")]
-        public async Task<IActionResult> RecordPropertyView(int propertyId)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userId))
-                return Unauthorized("User ID not found in token.");
-            await _serviceManager.PropertyViewHistoryService.AddPropertyViewAsync(propertyId, userId);
-            return Ok(new { Success = true, Message = "Property view recorded." });
         }
 
         [HttpGet("recent-views")]

@@ -13,5 +13,7 @@ namespace Services.Abstractions
         Task<IEnumerable<MostWishedPropertyDTO>> GetMostWishedPropertiesAsync(WishListFilterDTO filter);
         Task<PropertyWishListUsersDTO> GetPropertyWishListUsersAsync(int propertyId);
         Task<bool> IsPropertyInWishListAsync(int propertyId, string userId);
+        Task<OwnerWishlistSummaryDTO> GetBrokerWishlistAnalyticsAsync(string userId);
+        Task<OwnerWishlistSummaryDTO> GetDeveloperWishlistAnalyticsAsync(string userId);
     }
 } 

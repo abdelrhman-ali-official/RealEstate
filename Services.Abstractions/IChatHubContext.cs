@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Services.Abstractions
@@ -17,5 +18,13 @@ namespace Services.Abstractions
         // Room Events
         Task SendUserJoinedRoomAsync(string groupName, string userId);
         Task SendUserLeftRoomAsync(string groupName, string userId);
+        
+        // Presence Events
+        Task SendUserOnlineStatusAsync(string userId, bool isOnline);
+        Task SendUserLastSeenAsync(string userId, System.DateTime lastSeen);
+        
+        // Notification Events
+        Task SendNotificationAsync(string userId, string title, string message, string type);
+        Task SendBulkNotificationAsync(IEnumerable<string> userIds, string title, string message, string type);
     }
 } 

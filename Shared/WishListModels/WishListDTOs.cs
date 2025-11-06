@@ -75,4 +75,34 @@ namespace Shared.WishListModels
         public DateTime? FromDate { get; set; }
         public DateTime? ToDate { get; set; }
     }
+
+    // New DTOs for Broker/Developer Analytics
+    public record OwnerPropertyWishlistAnalyticsDTO
+    {
+        public int PropertyId { get; set; }
+        public string PropertyTitle { get; set; }
+        public string PropertyType { get; set; }
+        public string PropertyGovernment { get; set; }
+        public string PropertyCity { get; set; }
+        public decimal PropertyPrice { get; set; }
+        public int TotalWishlistCount { get; set; }
+        public List<WishlistUserDetailsDTO> InterestedUsers { get; set; } = new();
+    }
+
+    public record WishlistUserDetailsDTO
+    {
+        public string UserId { get; set; }
+        public string UserName { get; set; }
+        public string Email { get; set; }
+        public string PhoneNumber { get; set; }
+        public DateTime AddedToWishListAt { get; set; }
+    }
+
+    public record OwnerWishlistSummaryDTO
+    {
+        public int TotalProperties { get; set; }
+        public int TotalWishlistCount { get; set; }
+        public int TotalInterestedUsers { get; set; }
+        public List<OwnerPropertyWishlistAnalyticsDTO> PropertiesAnalytics { get; set; } = new();
+    }
 } 

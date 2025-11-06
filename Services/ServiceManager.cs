@@ -32,6 +32,7 @@ namespace Services
         private readonly Lazy<IWishListService> _wishListService;
         private readonly Lazy<IPropertyViewHistoryService> _propertyViewHistoryService;
         private readonly Lazy<IChatService> _chatService;
+        private readonly Lazy<ISubscriptionService> _subscriptionService;
 
         private readonly AutoMapper.IMapper _mapper;
     
@@ -61,6 +62,12 @@ namespace Services
                 mapper,
                 serviceProvider.GetRequiredService<IChatHubContext>(),
                 serviceProvider.GetRequiredService<Persistence.Data.StoreContext>()
+            ));
+
+            _subscriptionService = new Lazy<ISubscriptionService>(() => new SubscriptionService(
+                unitOfWork,
+                mapper,
+                userManager
             ));
 
             // Initialize authenticationService
@@ -105,5 +112,6 @@ namespace Services
         public IWishListService WishListService => _wishListService.Value;
         public IPropertyViewHistoryService PropertyViewHistoryService => _propertyViewHistoryService.Value;
         public IChatService ChatService => _chatService.Value;
+        public ISubscriptionService SubscriptionService => _subscriptionService.Value;
     }
 }

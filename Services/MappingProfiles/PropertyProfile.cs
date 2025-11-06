@@ -18,7 +18,10 @@ namespace Services.MappingProfiles
                 .ForMember(d => d.DeveloperCompanyName, options => options.MapFrom(s => s.Developer != null ? s.Developer.CompanyName : null))
                 .ForMember(d => d.BrokerName, options => options.MapFrom(s => s.Broker != null ? s.Broker.FullName : null))
                 .ForMember(d => d.BrokerAgencyName, options => options.MapFrom(s => s.Broker != null ? s.Broker.AgencyName : null))
-                .ForMember(d => d.OwnerType, options => options.MapFrom(s => s.DeveloperId.HasValue ? "Developer" : "Broker"));
+                .ForMember(d => d.OwnerType, options => options.MapFrom(s => s.DeveloperId.HasValue ? "Developer" : "Broker"))
+                .ForMember(d => d.TotalViews, options => options.Ignore())
+                .ForMember(d => d.UniqueViewers, options => options.Ignore())
+                .ForMember(d => d.LastViewedAt, options => options.Ignore());
 
             CreateMap<PropertyCreateDTO, Property>();
             CreateMap<PropertyUpdateDTO, Property>();

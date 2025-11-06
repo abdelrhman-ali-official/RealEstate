@@ -5,6 +5,7 @@ using Domain.Entities.DeveloperEntities;
 using Domain.Exceptions;
 using Services.Abstractions;
 using Services.Specifications;
+using Shared.DeveloperModels;
 using Shared.WishListModels;
 using System;
 using System.Collections.Generic;
@@ -145,6 +146,140 @@ namespace Services
                 .GetAsync(new WishListWithDetailsSpecifications(propertyId, userId));
 
             return wishListItem != null;
+        }
+
+        public async Task<OwnerWishlistSummaryDTO> GetBrokerWishlistAnalyticsAsync(string userId)
+        {
+            // Get broker by userId
+            var broker = await _unitOfWork.GetRepository<Domain.Entities.BrokerEntities.Broker, int>()
+                .GetAsync(new BrokerByUserIdSpecification(userId));
+            
+            if (broker == null)
+                throw new UnauthorizedAccessException("Broker not found");
+
+            // Check if broker has Pro or Premium subscription
+            var subscription = await _unitOfWork.GetRepository<Domain.Entities.SubscriptionEntities.Subscription, int>()
+                .GetAsync(new SubscriptionSpecifications(brokerId: broker.Id, isActive: true));
+
+            if (subscription == null || !subscription.Package.ShowWishlistUserDetails)
+                throw new UnauthorizedAccessException("This feature requires a Pro or Premium subscription");
+
+            // Get broker's properties
+            var properties = await _unitOfWork.GetRepository<Property, int>()
+                .GetAllAsync(new PropertyWithBrokerSpecifications(broker.Id));
+
+            var propertiesAnalytics = new List<OwnerPropertyWishlistAnalyticsDTO>();
+            var totalInterestedUsers = new HashSet<string>();
+
+            foreach (var property in properties)
+            {
+                var wishlistItems = await _unitOfWork.GetRepository<WishListItem, int>()
+                    .GetAllAsync(new PropertyWishListUsersSpecifications(property.Id));
+
+                if (wishlistItems.Any())
+                {
+                    var interestedUsers = wishlistItems.Select(w => new WishlistUserDetailsDTO
+                    {
+                        UserId = w.UserId,
+                        UserName = w.User.UserName,
+                        Email = w.User.Email,
+                        PhoneNumber = w.User.PhoneNumber ?? "N/A",
+                        AddedToWishListAt = w.CreatedAt
+                    }).ToList();
+
+                    propertiesAnalytics.Add(new OwnerPropertyWishlistAnalyticsDTO
+                    {
+                        PropertyId = property.Id,
+                        PropertyTitle = property.Title,
+                        PropertyType = property.Type.ToString(),
+                        PropertyGovernment = property.Government,
+                        PropertyCity = property.City,
+                        PropertyPrice = property.Price,
+                        TotalWishlistCount = wishlistItems.Count(),
+                        InterestedUsers = interestedUsers
+                    });
+
+                    foreach (var user in wishlistItems)
+                    {
+                        totalInterestedUsers.Add(user.UserId);
+                    }
+                }
+            }
+
+            return new OwnerWishlistSummaryDTO
+            {
+                TotalProperties = properties.Count(),
+                TotalWishlistCount = propertiesAnalytics.Sum(p => p.TotalWishlistCount),
+                TotalInterestedUsers = totalInterestedUsers.Count,
+                PropertiesAnalytics = propertiesAnalytics.OrderByDescending(p => p.TotalWishlistCount).ToList()
+            };
+        }
+
+        public async Task<OwnerWishlistSummaryDTO> GetDeveloperWishlistAnalyticsAsync(string userId)
+        {
+            // Get developer by userId
+            var developer = await _unitOfWork.GetRepository<Domain.Entities.DeveloperEntities.Developer, int>()
+                .GetAsync(new DeveloperByUserIdSpecification(userId));
+            
+            if (developer == null)
+                throw new UnauthorizedAccessException("Developer not found");
+
+            // Check if developer has Pro or Premium subscription
+            var subscription = await _unitOfWork.GetRepository<Domain.Entities.SubscriptionEntities.Subscription, int>()
+                .GetAsync(new SubscriptionSpecifications(developerId: developer.Id, isActive: true));
+
+            if (subscription == null || !subscription.Package.ShowWishlistUserDetails)
+                throw new UnauthorizedAccessException("This feature requires a Pro or Premium subscription");
+
+            // Get developer's properties
+            var properties = await _unitOfWork.GetRepository<Property, int>()
+                .GetAllAsync(new PropertyWithDeveloperSpecifications(new PropertySpecificationsParameters { DeveloperId = developer.Id }));
+
+            var propertiesAnalytics = new List<OwnerPropertyWishlistAnalyticsDTO>();
+            var totalInterestedUsers = new HashSet<string>();
+
+            foreach (var property in properties)
+            {
+                var wishlistItems = await _unitOfWork.GetRepository<WishListItem, int>()
+                    .GetAllAsync(new PropertyWishListUsersSpecifications(property.Id));
+
+                if (wishlistItems.Any())
+                {
+                    var interestedUsers = wishlistItems.Select(w => new WishlistUserDetailsDTO
+                    {
+                        UserId = w.UserId,
+                        UserName = w.User.UserName,
+                        Email = w.User.Email,
+                        PhoneNumber = w.User.PhoneNumber ?? "N/A",
+                        AddedToWishListAt = w.CreatedAt
+                    }).ToList();
+
+                    propertiesAnalytics.Add(new OwnerPropertyWishlistAnalyticsDTO
+                    {
+                        PropertyId = property.Id,
+                        PropertyTitle = property.Title,
+                        PropertyType = property.Type.ToString(),
+                        PropertyGovernment = property.Government,
+                        PropertyCity = property.City,
+                        PropertyPrice = property.Price,
+                        TotalWishlistCount = wishlistItems.Count(),
+                        InterestedUsers = interestedUsers
+                    });
+
+                    foreach (var user in wishlistItems)
+                    {
+                        totalInterestedUsers.Add(user.UserId);
+                    }
+                }
+            }
+
+            return new OwnerWishlistSummaryDTO
+            {
+                TotalProperties = properties.Count(),
+                TotalWishlistCount = propertiesAnalytics.Sum(p => p.TotalWishlistCount),
+                TotalInterestedUsers = totalInterestedUsers.Count,
+                PropertiesAnalytics = propertiesAnalytics.OrderByDescending(p => p.TotalWishlistCount).ToList()
+            };
         }
     }
 } 

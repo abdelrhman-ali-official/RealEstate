@@ -3,8 +3,6 @@ using System.Collections.Generic;
 
 namespace Shared.PropertyViewHistoryModels
 {
-    public record AddPropertyViewDTO(int PropertyId);
-
     public record PropertyViewHistoryDTO
     {
         public int Id { get; set; }
@@ -19,6 +17,37 @@ namespace Shared.PropertyViewHistoryModels
     public record RecentViewedPropertiesDTO
     {
         public List<PropertyViewHistoryDTO> RecentViews { get; set; } = new();
+    }
+
+    // New DTOs for property viewers feature (Pro/Premium only)
+    public record PropertyViewerDTO
+    {
+        public string UserId { get; set; }
+        public string UserName { get; set; }
+        public string Email { get; set; }
+        public string DisplayName { get; set; }
+        public string PhoneNumber { get; set; }
+        public DateTime ViewedAt { get; set; }
+        public int ViewCount { get; set; } // How many times this user viewed the property
+    }
+
+    public record PropertyViewersAnalyticsDTO
+    {
+        public int PropertyId { get; set; }
+        public string PropertyTitle { get; set; }
+        public int TotalViews { get; set; }
+        public int UniqueViewers { get; set; }
+        public List<PropertyViewerDTO> Viewers { get; set; } = new();
+        public DateTime? LastViewedAt { get; set; }
+        public DateTime? FirstViewedAt { get; set; }
+    }
+
+    public record PropertyViewAnalyticsRequestDTO
+    {
+        public int PropertyId { get; set; }
+        public DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
+        public int? Limit { get; set; } = 50; // Default limit for viewers
     }
 
     public record MostViewedPropertyDTO

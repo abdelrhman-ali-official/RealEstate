@@ -1,6 +1,7 @@
 using Domain.Contracts;
 using Domain.Entities.DeveloperEntities;
 using Domain.Entities.BrokerEntities;
+using Domain.Entities;
 using Domain.Exceptions;
 using Services.Abstractions;
 using Services.Specifications;
@@ -89,7 +90,20 @@ namespace Services
             var property = await _unitOfWork.GetRepository<Property, int>().GetAsync(
                 new PropertyWithDeveloperSpecifications(id));
 
-            return property is null ? null : _mapper.Map<PropertyResultDTO>(property);
+            if (property is null) 
+                return null;
+
+            var propertyDto = _mapper.Map<PropertyResultDTO>(property);
+
+            // Get view statistics
+            var views = await _unitOfWork.GetRepository<PropertyViewHistory, int>()
+                .GetAllAsync(new PropertyViewHistoryByPropertySpecifications(id));
+
+            propertyDto.TotalViews = views.Count();
+            propertyDto.UniqueViewers = views.Select(v => v.UserId).Distinct().Count();
+            propertyDto.LastViewedAt = views.OrderByDescending(v => v.ViewedAt).FirstOrDefault()?.ViewedAt;
+
+            return propertyDto;
         }
 
         public async Task<IEnumerable<PropertyResultDTO>> GetPropertiesByDeveloperAsync(int developerId, string userId)
@@ -138,7 +152,7 @@ namespace Services
             return _mapper.Map<IEnumerable<PropertyResultDTO>>(properties);
         }
 
-        public async Task<PropertyResultDTO> CreatePropertyAsync(PropertyCreateDTO propertyDto, string userId)
+        public async Task<PropertyResultDTO> CreatePropertyAsync(PropertyCreateDTO propertyDto, string userId, ISubscriptionService subscriptionService)
         {
             // Check if user is a developer or broker
             var developer = await _unitOfWork.GetRepository<Developer, int>().GetAsync(
@@ -149,6 +163,11 @@ namespace Services
 
             if (developer == null && broker == null)
                 throw new UnauthorizedAccessException("You must be a developer or broker to create properties.");
+
+            // Check subscription limits before creating property
+            var canCreateProperty = await subscriptionService.CanCreatePropertyAsync(userId);
+            if (!canCreateProperty)
+                throw new InvalidOperationException("You have reached your property limit. Please upgrade your subscription package to create more properties.");
 
             var property = _mapper.Map<Property>(propertyDto);
             
@@ -165,6 +184,9 @@ namespace Services
 
             await _unitOfWork.GetRepository<Property, int>().AddAsync(property);
             await _unitOfWork.SaveChangesAsync();
+
+            // Update property count in subscription
+            await subscriptionService.UpdatePropertyCountAsync(userId, 1);
 
             // Get the created property with owner info
             var createdProperty = await GetPropertyByIdAsync(property.Id);
@@ -205,7 +227,7 @@ namespace Services
             return updatedProperty!;
         }
 
-        public async Task<bool> DeletePropertyAsync(int id, string userId)
+        public async Task<bool> DeletePropertyAsync(int id, string userId, ISubscriptionService subscriptionService)
         {
             var property = await _unitOfWork.GetRepository<Property, int>().GetAsync(
                 new PropertyWithDeveloperSpecifications(id));
@@ -233,6 +255,9 @@ namespace Services
 
             _unitOfWork.GetRepository<Property, int>().Delete(property);
             await _unitOfWork.SaveChangesAsync();
+
+            // Update property count in subscription (decrease by 1)
+            await subscriptionService.UpdatePropertyCountAsync(userId, -1);
 
             return true;
         }

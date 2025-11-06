@@ -283,5 +283,65 @@ namespace Presentation
                 });
             }
         }
+
+        /// <summary>
+        /// Get wishlist analytics for authenticated broker (Pro/Premium only)
+        /// Shows all properties owned by the broker and users who wishlisted them
+        /// </summary>
+        [HttpGet("broker/analytics")]
+        [Authorize(Roles = "Broker")]
+        public async Task<ActionResult<ApiResponse<OwnerWishlistSummaryDTO>>> GetBrokerWishlistAnalytics()
+        {
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                    return Unauthorized(ApiResponse<OwnerWishlistSummaryDTO>.FailureResponse("User ID not found in token."));
+
+                var analytics = await _serviceManager.WishListService.GetBrokerWishlistAnalyticsAsync(userId);
+                
+                return Ok(ApiResponse<OwnerWishlistSummaryDTO>.SuccessResponse(analytics, "Broker wishlist analytics retrieved successfully"));
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                _logger.LogWarning("Broker wishlist analytics access denied: {Message}", ex.Message);
+                return StatusCode(403, ApiResponse<OwnerWishlistSummaryDTO>.FailureResponse(ex.Message));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving broker wishlist analytics: {Message}", ex.Message);
+                return StatusCode(500, ApiResponse<OwnerWishlistSummaryDTO>.FailureResponse("An error occurred while retrieving wishlist analytics"));
+            }
+        }
+
+        /// <summary>
+        /// Get wishlist analytics for authenticated developer (Pro/Premium only)
+        /// Shows all properties owned by the developer and users who wishlisted them
+        /// </summary>
+        [HttpGet("developer/analytics")]
+        [Authorize(Roles = "Developer")]
+        public async Task<ActionResult<ApiResponse<OwnerWishlistSummaryDTO>>> GetDeveloperWishlistAnalytics()
+        {
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                    return Unauthorized(ApiResponse<OwnerWishlistSummaryDTO>.FailureResponse("User ID not found in token."));
+
+                var analytics = await _serviceManager.WishListService.GetDeveloperWishlistAnalyticsAsync(userId);
+                
+                return Ok(ApiResponse<OwnerWishlistSummaryDTO>.SuccessResponse(analytics, "Developer wishlist analytics retrieved successfully"));
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                _logger.LogWarning("Developer wishlist analytics access denied: {Message}", ex.Message);
+                return StatusCode(403, ApiResponse<OwnerWishlistSummaryDTO>.FailureResponse(ex.Message));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving developer wishlist analytics: {Message}", ex.Message);
+                return StatusCode(500, ApiResponse<OwnerWishlistSummaryDTO>.FailureResponse("An error occurred while retrieving wishlist analytics"));
+            }
+        }
     }
 } 

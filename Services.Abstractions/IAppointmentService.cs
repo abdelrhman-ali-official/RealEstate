@@ -13,5 +13,7 @@ namespace Services.Abstractions
         Task<bool> CancelAppointmentAsync(int appointmentId, string customerId);
         Task<bool> UpdateAppointmentStatusAsync(int appointmentId, AppointmentStatus status, string ownerId, string userRole);
         Task<bool> UpdateAppointmentAsync(int appointmentId, AppointmentUpdateDTO dto, string userId, string userRole);
+        Task<IEnumerable<AppointmentResultDTO>> GetBrokerAppointmentsAsync(string userId, AppointmentSpecificationsParameters parameters);
+        Task<IEnumerable<AppointmentResultDTO>> GetDeveloperAppointmentsAsync(string userId, AppointmentSpecificationsParameters parameters);
     }
 } 

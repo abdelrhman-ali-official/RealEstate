@@ -27,6 +27,13 @@ namespace Shared.AppointmentModels
         public int? BrokerId { get; set; }
         public string? OwnerName { get; set; }
         public string? OwnerContact { get; set; }
+        
+        // Customer information
+        public string? CustomerId { get; set; }
+        public string? CustomerName { get; set; }
+        public string? CustomerEmail { get; set; }
+        public string? CustomerPhoneNumber { get; set; }
+        
         public DateTime AppointmentDate { get; set; }
         public AppointmentStatus Status { get; set; }
         public string? Notes { get; set; }

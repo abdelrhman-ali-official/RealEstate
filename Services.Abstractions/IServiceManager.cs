@@ -18,5 +18,6 @@ namespace Services.Abstractions
         public IWishListService WishListService { get; }
         public IPropertyViewHistoryService PropertyViewHistoryService { get; }
         public IChatService ChatService { get; }
+        public ISubscriptionService SubscriptionService { get; }
     }
 }

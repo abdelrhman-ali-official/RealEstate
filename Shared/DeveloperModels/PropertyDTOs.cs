@@ -32,6 +32,11 @@ namespace Shared.DeveloperModels
         public string? BrokerName { get; set; }
         public string? BrokerAgencyName { get; set; }
         public string OwnerType { get; set; } // "Developer" or "Broker"
+        
+        // View statistics
+        public int TotalViews { get; set; }
+        public int UniqueViewers { get; set; }
+        public DateTime? LastViewedAt { get; set; }
     }
 
     public record PropertyCreateDTO
